@@ -334,17 +334,73 @@ void AnimateClip::doUpdate( AnimProperties* animProperties) const
     }
 }
 
+static cocos2d::Node * getNodeByName(cocos2d::Node * parent,const std::string &path)
+{
+	 auto index = path.find("/");
+	 std::string sName;
+	 std::string sSubffixPath;
+	 if (index == std::string::npos)
+	 {
+		 sName = path;
+	 }
+	 else
+	 {
+		 sName = path.substr(0, index);
+		 sSubffixPath = path.substr(index+1);
+	 }
+
+	if ( sSubffixPath.empty())
+	{
+		if (parent->getName() == sName)
+		{
+			return parent;
+		}
+		return nullptr;
+	}
+	if (parent->getName() == sName)
+	{
+		auto pChildren = parent->getChildren();
+		for (auto it = pChildren.begin(); it != pChildren.end(); it++)
+		{
+
+			auto node = getNodeByName(*it, sSubffixPath);
+			if (node)
+			{
+				return node;
+			}
+
+
+		}
+	}
+
+	return nullptr;
+}
 cocos2d::Node* AnimateClip::getTarget(const std::string &path) const
 {
     if (path.empty())
         return _rootTarget;
 
-    cocos2d::Node *ret = nullptr;
-    _rootTarget->enumerateChildren(path, [&ret](cocos2d::Node* result) -> bool {
+
+	auto pChildren = _rootTarget->getChildren();
+	for (auto it = pChildren.begin(); it != pChildren.end(); it++)
+	{
+		auto node = getNodeByName(*it, path);
+		if (node)
+		{
+			return node;
+		}
+	}
+
+    //cocos2d::Node *ret = getNodeByName(_rootTarget, path);
+
+   /* _rootTarget->enumerateChildren(path, [&ret](cocos2d::Node* result) -> bool {
         ret = result;
         return true;
-    });
-    return ret;
+    });*/
+	
+	//_rootTarget
+
+    return nullptr;
 }
 
 float AnimateClip::computeElapse() const
