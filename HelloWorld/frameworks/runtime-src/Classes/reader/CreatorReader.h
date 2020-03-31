@@ -32,7 +32,7 @@
 #include "Macros.h"
 #include "CreatorReader_generated.h"
 #include "collider/ColliderManager.h"
-#include "dragonbones/DragonBonesHeaders.h"
+//#include "dragonbones/DragonBonesHeaders.h"
 //#include "dragonbones/cocos2dx/CCDragonBonesHeaders.h"
 #include "ui/WidgetExport.h"
 #include "ui/RadioButton.h"

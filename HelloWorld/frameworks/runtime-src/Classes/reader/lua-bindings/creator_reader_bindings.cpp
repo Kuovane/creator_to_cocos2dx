@@ -28,8 +28,6 @@
 #include "lua-bindings/reader/lua_creator_reader_auto.hpp"
 #include "lua-bindings/reader/lua_creator_reader_manual.hpp"
 
-#include "lua-bindings/dragonbones/lua_dragonbones_auto.hpp"
-#include "lua-bindings/dragonbones/lua_dragonbones_manual.hpp"
 
 int register_creator_reader_module(lua_State* L)
 {
@@ -39,8 +37,6 @@ int register_creator_reader_module(lua_State* L)
     register_all_creator_reader(L);
     register_all_creator_reader_manual(L);
     
-    register_all_creator_dragonbones(L);
-    register_all_creator_dragonbones_manual(L);
 
     return 0;
 }
