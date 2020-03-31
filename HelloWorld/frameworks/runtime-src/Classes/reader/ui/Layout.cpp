@@ -393,7 +393,7 @@ void CreatorLayout::doGridLayout()
 			
 		}
 
-		if (_resizeModeType == ResizeModeType::CONTAINER)
+		if (_resizeModeType == ResizeModeType::CONTAINER || _resizeModeType == ResizeModeType::CHILDREN)
 		{
 			if (_startAxis == StartAxis::HORIZONAL)
 			{
