@@ -78,7 +78,7 @@ void CreatorLayout::doHorizonalLayout()
 		float dx = _spacingX;
 		int count = getChildrenCount();
 
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
 			auto pChild = pChildren.at(i);
 
@@ -119,7 +119,7 @@ void CreatorLayout::doHorizonalLayout()
 			float itemWidth = targetWidth / count;
 
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; ++i)
 			{
 				auto pChild = pChildren.at(i);
 
@@ -143,7 +143,7 @@ void CreatorLayout::doHorizonalLayout()
 
 		float startX = - _paddingRight;
 
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
 			auto pChild = pChildren.at(i);
 			if (!pChild->isVisible())
@@ -176,7 +176,7 @@ void CreatorLayout::doHorizonalLayout()
 
 		
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; ++i)
 			{
 				auto pChild = pChildren.at(i);
 
@@ -198,7 +198,7 @@ void CreatorLayout::doHorizonalLayout()
 			float itemWidth = targetWidth / count;
 
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; ++i)
 			{
 				auto pChild = pChildren.at(i);
 
@@ -227,7 +227,7 @@ void CreatorLayout::doVerticalLayout()
 		//float d = _spacingY;
 		int count = getChildrenCount();
 
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
 			auto pChild = pChildren.at(i);
 			if (!pChild->isVisible())
@@ -266,7 +266,7 @@ void CreatorLayout::doVerticalLayout()
 			float itemHeight = targetHeight / count;
 
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; ++i)
 			{
 				auto pChild = pChildren.at(i);
 
@@ -289,7 +289,7 @@ void CreatorLayout::doVerticalLayout()
 
 		float startY = 0 - _paddingTop; //parentSize.height - _paddingTop;
 
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
 			auto pChild = pChildren.at(i);
 			if (!pChild->isVisible())
@@ -325,7 +325,7 @@ void CreatorLayout::doVerticalLayout()
 			float itemHeight = targetHeight / count;
 
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; ++i)
 			{
 				auto pChild = pChildren.at(i);
 
@@ -345,7 +345,7 @@ void CreatorLayout::doVerticalLayout()
 			this->setContentSize(Size(parentSize.width, targetHeight));
 
 
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; ++i)
 			{
 				auto pChild = pChildren.at(i);
 
@@ -381,7 +381,7 @@ void CreatorLayout::doGridLayout()
 		auto node = getFirstNode();//pChildren.at(0);
 		auto sCurlineSize = node->getContentSize();
 
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < count; ++i)
 		{
 			auto pChild = pChildren.at(i);
 			if (!pChild->isVisible())
@@ -410,7 +410,7 @@ void CreatorLayout::doGridLayout()
 					this->setContentSize(Size(parentSize.width, targetHeight));
 
 
-					for (int i = 0; i < count; i++)
+					for (int i = 0; i < count; ++i)
 					{
 						auto pChild = pChildren.at(i);
 
@@ -434,7 +434,7 @@ void CreatorLayout::doGridLayout()
 					float w =  - (sCurPos.x - sCurlineSize.width) + _paddingLeft;
 					this->setContentSize(Size(w, parentSize.height));
 
-					for (int i = 0; i < count; i++)
+					for (int i = 0; i < count; ++i)
 					{
 						auto pChild = pChildren.at(i);
 
@@ -445,7 +445,6 @@ void CreatorLayout::doGridLayout()
 				}
 			}
 		}
-
 	}
 
 	//float startY = parentSize.height - _paddingTop;
