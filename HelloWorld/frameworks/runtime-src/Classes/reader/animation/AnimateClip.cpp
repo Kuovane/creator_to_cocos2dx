@@ -65,6 +65,7 @@ AnimateClip::AnimateClip()
 AnimateClip::~AnimateClip()
 {
     // a loop animate might keep running until destruction, memory will leak if not stop it
+    _endCallback = nullptr;
     if(_running)
         stopAnimate();
 
@@ -127,10 +128,12 @@ bool AnimateClip::initWithAnimationClip(cocos2d::Node* rootTarget, AnimationClip
 
         // assign it to be used in anonymous namespace
         g_clip = _clip;
+
 		const auto& allAnimProperties = _clip->getAnimProperties();
-		for (const auto& animProperties : allAnimProperties)
+		//for (const auto& animProperties : allAnimProperties)
+		for(auto animProperties = allAnimProperties.begin(); animProperties!= allAnimProperties.end(); ++animProperties)
 		{
-			animProperties->setTarget(getTarget(animProperties->path));
+			(*animProperties)->setTarget(getTarget((*animProperties)->path));
 		}
     }
 
@@ -360,7 +363,7 @@ static cocos2d::Node * getNodeByName(cocos2d::Node * parent,const std::string &p
 	if (parent->getName() == sName)
 	{
 		auto pChildren = parent->getChildren();
-		for (auto it = pChildren.begin(); it != pChildren.end(); it++)
+		for (auto it = pChildren.begin(); it != pChildren.end(); ++it)
 		{
 
 			auto node = getNodeByName(*it, sSubffixPath);
@@ -382,7 +385,7 @@ cocos2d::Node* AnimateClip::getTarget(const std::string &path) const
 
 
 	auto pChildren = _rootTarget->getChildren();
-	for (auto it = pChildren.begin(); it != pChildren.end(); it++)
+	for (auto it = pChildren.begin(); it != pChildren.end(); ++it)
 	{
 		auto node = getNodeByName(*it, path);
 		if (node)

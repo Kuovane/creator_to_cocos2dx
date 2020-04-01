@@ -18,6 +18,9 @@ void AnimationManager::cleanup()
 {
 	Node::cleanup();
 	stopAllAnimationClips();
+	for (auto&& animationInfo : _animations)
+		animationInfo.target->release();
+	_animations.clear();
 }
 
 void AnimationManager::addAnimation(const AnimationInfo& animationInfo)
