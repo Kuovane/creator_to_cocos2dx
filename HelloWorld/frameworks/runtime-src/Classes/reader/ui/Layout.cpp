@@ -2,27 +2,6 @@
 
 NS_CCR_BEGIN
 
-static void arrangeToLeft( Node * pNode, float offx)
-{
-
-}
-
-static void arrangeToRight(Node * pNode, float offy)
-{
-
-}
-
-static void arrangeToTop(Node * pNode, float offy)
-{
-
-}
-
-static void arrangeToBottom(Node * pNode, float offy)
-{
-
-}
-
-
 
 CreatorLayout* CreatorLayout::create()
 {
@@ -514,9 +493,20 @@ cocos2d::Vec2 CreatorLayout::getGridStartPos()
 	else
 
 	{
-		sRet.x = _horizontalDirection == HDirectionType::LEFT_TO_RIGHT ? _paddingLeft : -_paddingRight;
+		auto parentSize = this->getContentSize();
+		if (_startAxis == StartAxis::HORIZONAL)
+		{
+			sRet.x = _horizontalDirection == HDirectionType::LEFT_TO_RIGHT ? _paddingLeft : parentSize.width - _paddingRight;
 
-		sRet.y = _verticalDirection == VDirectionType::BOTTOM_TO_TOP ? _paddingBottom : -_paddingTop;
+			sRet.y = _verticalDirection == VDirectionType::BOTTOM_TO_TOP ? _paddingBottom : -_paddingTop;
+		}
+		else
+		{
+			sRet.x = _horizontalDirection == HDirectionType::LEFT_TO_RIGHT ? _paddingLeft : -_paddingRight;
+
+			sRet.y = _verticalDirection == VDirectionType::BOTTOM_TO_TOP ? _paddingBottom : parentSize.height - _paddingTop;
+		}
+
 	}
 
 	
