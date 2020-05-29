@@ -34,8 +34,8 @@ class PageView extends Node {
 
         // remove background, view and idicator from children
         Utils.remove_child_by_id(this, indicator_id);
-        Utils.remove_child_by_id(this, view_id);
-        Utils.remove_child_by_id(this, background_id);
+        //Utils.remove_child_by_id(this, view_id);
+       Utils.remove_child_by_id(this, background_id);
 
         this._node_data._children.forEach(function(child_idx) {
             this.parse_child(child_idx.__id__);

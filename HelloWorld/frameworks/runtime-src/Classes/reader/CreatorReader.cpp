@@ -550,13 +550,54 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree, bool isS
     }
 
 	//AnyNode_ToggleGroup
+	if (static_cast<int>(bufferType) == buffers::AnyNode_PageView)
+	{
+		auto pGroup = dynamic_cast<CreatorPageView*>(node);
+
+		auto pPageViewChildren = pGroup->getChildren();
+		auto pNode = pGroup->getChildByName("view");
+			
+		if (pNode)
+		{
+
+				auto children = pNode->getChildren();
+				auto count = pNode->getChildrenCount();
+
+				for (int i = 0; i < count; ++i)
+				{
+					auto pTargetNode = pPageViewChildren.at(i);
+					auto pSourceNode = children.at(i);
+					std::list<cocos2d::Node*> sList;
+
+					auto pNodeTempChildren = pSourceNode->getChildren();
+					for (int j = 0; j < pSourceNode->getChildrenCount(); ++j)
+					{
+						sList.push_back(pNodeTempChildren.at(j));
+
+					}
+
+					for (auto it = sList.begin(); it != sList.end(); ++it)
+					{
+						(*it)->retain();
+						(*it)->removeFromParentAndCleanup(false);
+						pTargetNode->addChild((*it));
+						(*it)->release();
+					}
+				}
+
+				pNode->removeFromParent();
+			}
+
+		
+	}
+
 	if (static_cast<int>(bufferType) == buffers::AnyNode_ToggleGroup)
 	{
 		auto pGroup = dynamic_cast<CreatorRadioButtonGroup*>(node);
 		auto children = pGroup->getChildren();
 		auto isAllowedNoSelection = pGroup->isAllowedNoSelection();
 		pGroup->setAllowedNoSelection(false);
-		for (auto it= children.begin();it != children.end();it++)
+		for (auto it = children.begin(); it != children.end(); it++)
 		{
 			auto pToggle = dynamic_cast<CreatorRadioButton*>(*it);
 			if (pToggle)
