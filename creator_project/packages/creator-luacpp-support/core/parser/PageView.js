@@ -53,6 +53,11 @@ class PageView extends Node {
         this.add_property_int.bind(indicator)('space', 'spacing', indicator_component);
 
         let pageview_size = this._properties.node.contentSize;
+
+         if(!indicator_node._position){
+           indicator_node['_position'] = {x:indicator_node._trs.array[0], y:indicator_node._trs.array[1]};
+        }
+     
         indicator._properties.positionAnchor = {x: 0.5 + indicator_node._position.x / pageview_size.w,
                                              y: 0.5 + indicator_node._position.y / pageview_size.h};
 
