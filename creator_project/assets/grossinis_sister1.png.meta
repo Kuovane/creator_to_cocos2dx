@@ -1,10 +1,15 @@
 {
-  "ver": "2.2.0",
+  "ver": "2.3.4",
   "uuid": "b6d52d4a-af20-4de3-a424-545bba532ef7",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 52,
+  "height": 139,
+  "platformSettings": {},
   "subMetas": {
     "grossinis_sister1": {
       "ver": "1.0.4",

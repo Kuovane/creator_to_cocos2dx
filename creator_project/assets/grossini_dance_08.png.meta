@@ -1,10 +1,15 @@
 {
-  "ver": "2.2.0",
+  "ver": "2.3.4",
   "uuid": "4e2edada-a2d6-4635-afdf-c426810de768",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 85,
+  "height": 121,
+  "platformSettings": {},
   "subMetas": {
     "grossini_dance_08": {
       "ver": "1.0.4",
