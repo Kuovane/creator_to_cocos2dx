@@ -138,6 +138,14 @@ class Node {
         }
     }
 
+     add_property_trs(newkey, value, data) {
+        if (value in data) {
+            let x = data[value].array[0];
+            let y = data[value].array[1];
+            this._properties[newkey] = {x:x, y:y};
+        }
+    }
+
     add_property_rgb(newkey, value, data) {
         if (value in data) {
             let r = data[value].r;
@@ -205,24 +213,39 @@ class Node {
         }
 
 
-        
+       // this._properties.backgroundImage = Utils.get_sprite_frame_name_by_uuid(component._N$backgroundImage.__uuid__);
         
         this.add_property_rgb('color', '_color', data);
         this.add_property_int('globalZOrder', '_globalZOrder', data);
         this.add_property_int('localZOrder', '_localZOrder', data);
         this.add_property_int_width_floor('opacity', '_opacity', data);
         this.add_property_bool('opacityModifyRGB', '_opacityModifyRGB', data);
-        this.add_property_vec2('position', '_position', data);
-        this.add_property_int('rotationSkewX', '_rotationX', data);
-        this.add_property_int('rotationSkewY', '_rotationY', data);
+
+        if(data._position){
+            this.add_property_vec2('position', '_position', data);
+        }else{
+            this.add_property_trs('position', '_trs', data);
+        }
+        
+        if(data._rotationX){
+            this.add_property_int('rotationSkewX', '_rotationX', data);
+            this.add_property_int('rotationSkewY', '_rotationY', data);
+        }else if(data._eulerAngles){
+            this._properties['rotationSkewX'] = -data._eulerAngles.z
+            this._properties['rotationSkewY'] = -data._eulerAngles.z
+        }
+
 
         if(data._scale)
         {
             this.add_property_int('scaleX', 'x', data._scale);
             this.add_property_int('scaleY', 'y', data._scale);
         }   
-        else
-        {
+        else if(data._trs){
+            this._properties['scaleX'] = data._trs.array[7];
+            this._properties['scaleY'] = data._trs.array[8];
+            
+        }else{
             this.add_property_int('scaleX', '_scaleX', data);
             this.add_property_int('scaleY', '_scaleY', data);
         }
