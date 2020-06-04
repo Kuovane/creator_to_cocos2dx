@@ -1406,11 +1406,23 @@ void CreatorReader::parseEditBox(cocos2d::ui::EditBox* editBox, const buffers::E
     editBox->setReturnType(static_cast<cocos2d::ui::EditBox::KeyboardReturnType>(returnType));
     editBox->setInputFlag(static_cast<cocos2d::ui::EditBox::InputFlag>(inputFlag));
     editBox->setInputMode(static_cast<cocos2d::ui::EditBox::InputMode>(inputMode));
+
     editBox->setFontSize(fontSize);
-    editBox->setFontColor(cocos2d::Color3B(fontColor->r(), fontColor->g(), fontColor->b()));
-    editBox->setPlaceHolder(placerholder->c_str());
-    editBox->setPlaceholderFontSize(placerholderFontSize);
-    editBox->setPlaceholderFontColor(cocos2d::Color3B(placerholderFontColor->r(), placerholderFontColor->g(), placerholderFontColor->b()));
+	editBox->setPlaceholderFontSize(placerholderFontSize);
+	if (fontColor)
+	{
+		editBox->setFontColor(cocos2d::Color3B(fontColor->r(), fontColor->g(), fontColor->b()));
+	}
+	if (placerholderFontColor)
+	{
+		editBox->setPlaceholderFontColor(cocos2d::Color3B(placerholderFontColor->r(), placerholderFontColor->g(), placerholderFontColor->b()));
+	}
+	if (placerholder)
+	{
+		editBox->setPlaceHolder(placerholder->c_str());
+	}
+	
+    
     editBox->setMaxLength(maxLen);
     editBox->setText(text->c_str());
 }
