@@ -5,7 +5,7 @@ cc.exports.UIUtils = require "app.views.UIUtils"
 
 local TestCreatorAni = require "app.views.TestCreatorAni"
 local Testcollider = require "app.views.collider"
-local Testdragonbones = require "app.views.dragonbones"
+local TestSpine = require "app.views.spine"
 local Testmask = require "app.views.mask"
 local Testmotionstreak = require "app.views.motionstreak"
 local Testpageview = require "app.views.pageview"
@@ -108,9 +108,9 @@ function MainScene:init2()
     webview:addClickEventListener(function(sender)
         self:addChild(Testwebview:create())
       end)
-      local dragonbones = UIUtils:seekNodeByName(self.m_root,"dragonbones")
-    dragonbones:addClickEventListener(function(sender)
-        self:addChild(Testdragonbones:create())
+      local spine = UIUtils:seekNodeByName(self.m_root,"spine")
+      spine:addClickEventListener(function(sender)
+        self:addChild(TestSpine:create())
       end)
 
 
