@@ -29,19 +29,23 @@ class RichText extends Node {
         if (component._N$imageAtlas) {
             // find sprite frame name
             regex = /<img src=\'(\w+)\'/;
-            let resource = text.match(regex)[1];
+            let ftext = text.match(regex)
+            if(ftext){
+                let resource = ftext[1];
 
-            // add sprite frames
-            let json_uuid = component._N$imageAtlas.__uuid__;
-            let json_content = Utils.get_sprite_frame_json_by_uuid(json_uuid);
-            let resource_uuid = json_content._spriteFrames[resource].__uuid__;
-            Utils.get_sprite_frame_name_by_uuid(resource_uuid);
+                // add sprite frames
+                let json_uuid = component._N$imageAtlas.__uuid__;
+                let json_content = Utils.get_sprite_frame_json_by_uuid(json_uuid);
+                let resource_uuid = json_content._spriteFrames[resource].__uuid__;
+                Utils.get_sprite_frame_name_by_uuid(resource_uuid);
 
-            // <img src='xx'/> -> <img scr='xxx' width='yyy' height='zzz'/>
-            let resource_json_content = Utils.get_sprite_frame_json_by_uuid(resource_uuid);
-            let resource_size = {width: resource_json_content.content.originalSize[0],
+                // <img src='xx'/> -> <img scr='xxx' width='yyy' height='zzz'/>
+                let resource_json_content = Utils.get_sprite_frame_json_by_uuid(resource_uuid);
+                let resource_size = {width: resource_json_content.content.originalSize[0],
                                  height: resource_json_content.content.originalSize[1]};
-            text = text.replace(/(<img\s+src=\'\w+\')/, "$1 width='" + resource_size.width + "' height='" + resource_size.height + "'");
+                text = text.replace(/(<img\s+src=\'\w+\')/, "$1 width='" + resource_size.width + "' height='" + resource_size.height + "'");
+            }
+            
         }
 
         this._properties.text = text;

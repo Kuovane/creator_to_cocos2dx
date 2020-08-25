@@ -15,8 +15,11 @@ class ProgressBar extends Node {
 
         // background sprite
         let bg_component = Node.get_node_component_of_type(this._node_data, 'cc.Sprite');
-        if (bg_component._spriteFrame)
-            this._properties.backgroundSpriteFrameName = Utils.get_sprite_frame_name_by_uuid(bg_component._spriteFrame.__uuid__);
+        if(bg_component){
+            if (bg_component._spriteFrame)
+                this._properties.backgroundSpriteFrameName = Utils.get_sprite_frame_name_by_uuid(bg_component._spriteFrame.__uuid__);    
+        }
+        
 
         let bar_component = Node.get_node_component_of_type(this._node_data, 'cc.ProgressBar');
         this._properties.percent = bar_component._N$progress * 100;

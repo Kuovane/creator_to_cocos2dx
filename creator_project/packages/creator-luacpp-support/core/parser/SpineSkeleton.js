@@ -15,10 +15,13 @@ class SpineSkeleton extends Node {
 
         // search for spine file
         let component = Node.get_node_component_of_type(this._node_data, 'sp.Skeleton');
+        if(component._N$skeletonData){
+            let path_info = get_spine_info_by_uuid(component._N$skeletonData.__uuid__);
+            this._properties.jsonFile = state._assetpath + path_info.relative_path;
+            this._properties.atlasFile = state._assetpath + path_info.atlas_url.relative_path;    
+        }
 
-        let path_info = get_spine_info_by_uuid(component._N$skeletonData.__uuid__);
-        this._properties.jsonFile = state._assetpath + path_info.relative_path;
-        this._properties.atlasFile = state._assetpath + path_info.atlas_url.relative_path;
+        
         this.add_property_str('defaultSkin', 'defaultSkin', component);
         this.add_property_str('defaultAnimation', 'defaultAnimation', component);
         this.add_property_bool('loop', 'loop', component);

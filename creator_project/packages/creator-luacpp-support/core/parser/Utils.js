@@ -214,11 +214,25 @@ let get_spine_info_by_uuid = function (uuid) {
 
 
         let jsonPath = get_relative_full_path_by_uuid(uuid);
-        let atlasPath = get_relative_full_path_by_uuid(jsonfile.atlas);
-
-
         state._uuid[uuid] = jsonPath;
-        state._uuid[uuid].atlas_url = atlasPath;
+
+        if(jsonfile.atlas){
+            let atlasPath = get_relative_full_path_by_uuid(jsonfile.atlas);    
+            state._uuid[uuid].atlas_url = atlasPath;
+        }
+        else
+        {
+            let atlas = {
+                fullpath:Utils.replaceExt(jsonPath.fullpath, '.atlas'),
+                relative_path :Utils.replaceExt(jsonPath.relative_path, '.atlas'),
+            };
+            state._uuid[uuid].atlas_url = atlas;
+        }
+        
+
+
+        
+        
 
        /* let contents = fs.readFileSync(jsonfile);
         let contents_json = JSON.parse(contents);

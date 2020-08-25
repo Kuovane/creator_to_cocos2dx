@@ -20,8 +20,9 @@ class DragonBones extends Node {
         this.add_property_int('timeScale', '_N$timeScale', dragonbones_armature_display);
         this.add_property_int('playTimes', 'playTimes', dragonbones_armature_display);
 
+        Utils.log('[creator-luacpp-support] error: Do not support dragonBones');
         // bones data path and bone data name
-        let bone_asset = dragonbones_armature_display._N$dragonAsset;
+       /* let bone_asset = dragonbones_armature_display._N$dragonAsset;
         if (bone_asset) {
             let bone_data_path_info = Utils.get_relative_full_path_by_uuid(bone_asset.__uuid__);
             this._properties.boneDataPath = state._assetpath + bone_data_path_info.relative_path;
@@ -49,7 +50,7 @@ class DragonBones extends Node {
             let image_uuid = texture_atlas_asset.__uuid__ + '_image';
             state._uuid[image_uuid] = {fullpath: image_full_path,
                                        relative_path: image_relative_path};
-        }
+        }*/
     }
 }
 

@@ -80,7 +80,8 @@ class EditBox extends Node {
      initBackground(editbox_component) {
         let pageview_node_id = editbox_component.node.__id__;
         let pageview_node = state._json_data[pageview_node_id];
-        let background_id = pageview_node._children[0].__id__;
+        if(pageview_node._children.length>0){
+                    let background_id = pageview_node._children[0].__id__;
         let background_node = state._json_data[background_id];
         let background_sprite_component = Node.get_node_component_of_type(background_node, 'cc.Sprite');
         if (background_sprite_component._spriteFrame) {
@@ -93,9 +94,12 @@ class EditBox extends Node {
 
             //this._properties.background = background;
              this._properties.backgroundImage = background.spriteFrame
+            }
+             Utils.remove_child_by_id(this, background_id);
+            return background_id;
         }
-        Utils.remove_child_by_id(this, background_id);
-        return background_id;
+
+        return 0;
     }
 
 }
