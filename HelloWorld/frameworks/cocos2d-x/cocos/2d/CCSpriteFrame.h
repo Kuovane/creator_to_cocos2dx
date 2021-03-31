@@ -286,6 +286,10 @@ CC_CONSTRUCTOR_ACCESS:
      */
     bool initWithTextureFilename(const std::string& filename, const Rect& rect, bool rotated, const Vec2& offset, const Size& originalSize);
 
+	bool hasAdjustRect() { return _bAdjustRect; };
+	void adjustRect(bool b) { _bAdjustRect = b; };
+
+	std::string &getTextureFileName() { return _textureFilename; }
 protected:
     Vec2 _offset;
     Vec2 _anchorPoint;
@@ -299,6 +303,7 @@ protected:
     Texture2D *_texture;
     std::string  _textureFilename;
     PolygonInfo _polygonInfo;
+	bool _bAdjustRect = false;
 };
 
 // end of _2d group

@@ -182,7 +182,7 @@ void CreatorRadioButton::addChild(Node *child)
 		{
 			setCheckMarkNode(spirte);
 			ui::RadioButton::addChild(spirte);
-			//spirte->setLocalZOrder(1);
+			spirte->setLocalZOrder(1);
 			return;
 		}
 	}
@@ -193,7 +193,6 @@ void CreatorRadioButton::addChild(Node *child)
 		if (spirte)
 		{
 			setBgNode(spirte);
-			spirte->setLocalZOrder(-1);
 			addProtectedChild(spirte, -1, -1);
 			return;
 		}

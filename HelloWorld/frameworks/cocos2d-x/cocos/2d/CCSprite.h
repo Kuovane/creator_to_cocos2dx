@@ -314,6 +314,8 @@ public:
      */
     virtual bool isFrameDisplayed(SpriteFrame *frame) const;
 
+	bool isSpriteFrame() const;
+
     /**
      * Returns the current displayed frame.
      */

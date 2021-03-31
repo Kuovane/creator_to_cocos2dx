@@ -179,7 +179,7 @@ public:
     bool init();
     void setIsAlignOnce(bool isAlignOnce);
     void setAdaptNode(cocos2d::Node* needAdaptNode);
-
+	cocos2d::Node* getAdaptNode();
 
 	//void setLayoutParameter(cocos2d::ui::RelativeLayoutParameter *parameter);
 	void setMargin(const Margin &sMargin);
@@ -229,11 +229,14 @@ public:
     virtual void update(float dt) override;
     // do layout align manually, you should call it when you make layout content size different from scene in Creator.
     void forceDoAlign();
+	void forceDoAlignAssignNode(cocos2d::Node* assignNode);
 	static void setSafeUIRect(cocos2d::Rect &sRect);
 	static cocos2d::Rect& getSafeUIRect() {
 		return m_sSafeUIRect;
 	};
 	virtual void cleanup()override;
+	void addWidget(WidgetAdapter*);
+	void removeWidgetByNode(cocos2d::Node* pNode);
 private:
     friend class CreatorReader;
 

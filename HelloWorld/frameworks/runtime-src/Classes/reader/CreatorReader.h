@@ -184,7 +184,7 @@ protected:
     std::string _version;
 
     AnimationManager *_animationManager;
-    ColliderManager *_collisionManager;
+   // ColliderManager *_collisionManager;
 
     // Widget in creator is a component used to do Layout
     WidgetManager *_widgetManager;

@@ -342,14 +342,17 @@ void AnimProperties::updateAnimSpriteFrame(cocos2d::Node* target, float elapsed)
 		{
 			auto frameCache = cocos2d::SpriteFrameCache::getInstance();
 			auto pSpriteFrame = frameCache->getSpriteFrameByName(nextPath);
+			auto pRenderNormal = pButton->getRendererNormal();
+			auto blendFunc = pRenderNormal->getBlendFunc();
 			if (pSpriteFrame)
 			{
-				pButton->getRendererNormal()->setSpriteFrame(pSpriteFrame);
+				pRenderNormal->setSpriteFrame(pSpriteFrame);
 			}
 			else
 			{
-				pButton->getRendererNormal()->setTexture(nextPath);
+				pRenderNormal->setTexture(nextPath);
 			}
+			pRenderNormal->setBlendFunc(blendFunc);
 		}
 		else
 		{
@@ -358,14 +361,17 @@ void AnimProperties::updateAnimSpriteFrame(cocos2d::Node* target, float elapsed)
 			{
 				auto frameCache = cocos2d::SpriteFrameCache::getInstance();
 				auto pSpriteFrame = frameCache->getSpriteFrameByName(nextPath);
+				auto blend = pSprite->getBlendFunc();
 				if (pSpriteFrame)
 				{
-					pSprite->setSpriteFrame(pSpriteFrame);
+					if(pSprite->getSpriteFrame() != pSpriteFrame)
+						pSprite->setSpriteFrame(pSpriteFrame);
 				}
 				else
 				{
 					pSprite->setTexture(nextPath);
 				}
+				pSprite->setBlendFunc(blend);
 			}
 		}
 

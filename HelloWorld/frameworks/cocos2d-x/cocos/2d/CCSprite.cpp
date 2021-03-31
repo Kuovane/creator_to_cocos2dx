@@ -1640,6 +1640,11 @@ bool Sprite::isFrameDisplayed(SpriteFrame *frame) const
             frame->getOffset().equals(_unflippedOffsetPositionFromCenter));
 }
 
+ bool Sprite::isSpriteFrame() const
+{
+	 return this->_spriteFrame;
+}
+
 SpriteFrame* Sprite::getSpriteFrame() const
 {
     if(nullptr != this->_spriteFrame)

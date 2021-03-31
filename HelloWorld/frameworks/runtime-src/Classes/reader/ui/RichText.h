@@ -48,6 +48,10 @@ public :
 
 	void removeAllElements();
 
+	int getElementCount();
+	
+	void flipElements();
+
 	void setElementsAnchorPoint(Vec2 sVec2);
 
 	void formatRenderers();

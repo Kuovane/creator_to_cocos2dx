@@ -250,11 +250,11 @@ int lua_creator_reader_AnimationManager_playAnimationClip(lua_State* tolua_S)
 			cobj->playAnimationClip(arg0, arg1, func, nModeType);
 		}
 		else
-		{ 
+		{
 
 			cobj->playAnimationClip(arg0, arg1, nullptr, nModeType);
 		}
-		
+
 
 		lua_settop(tolua_S, 1);
 		return 1;
@@ -381,47 +381,6 @@ static int lua_Button_create(lua_State* tolua_S)
 }
 
 
-static int lua_Button_setTransitionType(lua_State* tolua_S)
-{
-	int argc = 0;
-	bool ok = true;
-
-#if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-
-	if (!tolua_isusertype(tolua_S, 1, "creator.CreatorButton", 0, &tolua_err))
-	{
-		tolua_error(tolua_S, "'setTransitionType' is not executed with CreatorButton\n", NULL);
-		return 0;
-	}
-
-#endif
-	auto self = static_cast<creator::CreatorButton*>(tolua_tousertype(tolua_S, 1, 0));
-	argc = lua_gettop(tolua_S) - 1;
-
-	if (argc == 1)
-	{
-		int nType = lua_tointeger(tolua_S, 2);
-
-		self->setTransitionType((creator::CreatorButton::TransitionType)nType);
-
-		return 1;
-	}
-
-
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "creator.CreatorButton:setTransitionType", argc, 1);
-	return 0;
-#if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_Button_setTransitionType'.", &tolua_err);
-#endif
-				return 0;
-}
-
-
 static int lua_Button_addRefrenceChild(lua_State* tolua_S)
 {
 	int argc = 0;
@@ -451,6 +410,7 @@ static int lua_Button_addRefrenceChild(lua_State* tolua_S)
 
 		self->addRefrenceChild(arg0);
 
+		lua_settop(tolua_S, 1);
 		return 1;
 	}
 
@@ -493,7 +453,7 @@ static int lua_Button_removeRefrenceChild(lua_State* tolua_S)
 		ok &= luaval_to_object<cocos2d::Node>(tolua_S, 2, "cc.Node", &arg0, "creator.CreatorButton:removeRefrenceChild");
 
 		self->removeRefrenceChild(arg0);
-
+		lua_settop(tolua_S, 1);
 		return 1;
 	}
 
@@ -534,7 +494,7 @@ static int lua_Button_enableAutoGrayEffect(lua_State* tolua_S)
 		ok &= luaval_to_boolean(tolua_S, 2, &arg0, "creator.CreatorButton:enableAutoGrayEffect");
 
 		self->enableAutoGrayEffect(arg0);
-
+		lua_settop(tolua_S, 1);
 		return 1;
 	}
 
@@ -549,6 +509,30 @@ static int lua_Button_enableAutoGrayEffect(lua_State* tolua_S)
 }
 
 
+static int lua_Button_setTransitionType(lua_State* tolua_S)
+{
+	int argc = 0;
+	bool ok = true;
+
+
+	auto self = static_cast<creator::CreatorButton*>(tolua_tousertype(tolua_S, 1, 0));
+	argc = lua_gettop(tolua_S) - 1;
+
+	if (argc == 1)
+	{
+		int type = lua_tointeger(tolua_S, 2);
+		self->setTransitionType((creator::CreatorButton::TransitionType)type);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+
+
+	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "creator.CreatorButton:setTransitionType", argc, 1);
+	return 0;
+
+}
+
+
 
 static int lua_register_creator_reader_button(lua_State* tolua_S)
 {
@@ -557,10 +541,10 @@ static int lua_register_creator_reader_button(lua_State* tolua_S)
 
 	tolua_beginmodule(tolua_S, "CreatorButton");
 		tolua_function(tolua_S, "create", lua_Button_create);
-		tolua_function(tolua_S, "setTransitionType", lua_Button_setTransitionType);
 		tolua_function(tolua_S, "addRefrenceChild", lua_Button_addRefrenceChild);
 		tolua_function(tolua_S, "removeRefrenceChild", lua_Button_removeRefrenceChild);
 		tolua_function(tolua_S, "enableAutoGrayEffect", lua_Button_enableAutoGrayEffect);
+		tolua_function(tolua_S, "setTransitionType", lua_Button_setTransitionType);
 	tolua_endmodule(tolua_S);
 	std::string typeName = typeid(creator::CreatorButton).name();
 	g_luaType[typeName] = "creator.CreatorButton";
@@ -719,8 +703,287 @@ static int lua_Layout_create(lua_State* tolua_S)
 				return 0;
 }
 
+static int lua_Layout_setSpacingX(lua_State* tolua_S)
+{
+    int argc = 0;
+    creator::CreatorLayout* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+    
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"creator.CreatorLayout",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    cobj = (creator::CreatorLayout*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_Layout_setSpacingX'", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1)
+    {
+        double arg0;
+        ok &= luaval_to_number(tolua_S, 2,&arg0, "creator.CreatorLayout:setSpacingX");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_Layout_setSpacingX'", nullptr);
+            return 0;
+        }
+        cobj->setSpacingX(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorLayout:setSpacingX",argc, 1);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_Layout_setSpacingX'.",&tolua_err);
+#endif
+    
+    return 0;
+}
 
+static int lua_Layout_setSpacingY(lua_State* tolua_S)
+{
+    int argc = 0;
+    creator::CreatorLayout* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+    
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"creator.CreatorLayout",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    cobj = (creator::CreatorLayout*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_Layout_setSpacingY'", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1)
+    {
+        double arg0;
+        ok &= luaval_to_number(tolua_S, 2,&arg0, "creator.CreatorLayout:setSpacingY");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_Layout_setSpacingY'", nullptr);
+            return 0;
+        }
+        cobj->setSpacingY(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorLayout:setSpacingY",argc, 1);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_Layout_setSpacingY'.",&tolua_err);
+#endif
+    
+    return 0;
+}
 
+static int lua_Layout_setPaddingTop(lua_State* tolua_S)
+{
+    int argc = 0;
+    creator::CreatorLayout* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+    
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"creator.CreatorLayout",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    cobj = (creator::CreatorLayout*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_Layout_setPaddingTop'", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1)
+    {
+        double arg0;
+        ok &= luaval_to_number(tolua_S, 2,&arg0, "creator.CreatorLayout:setPaddingTop");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_Layout_setPaddingTop'", nullptr);
+            return 0;
+        }
+        cobj->setPaddingTop(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorLayout:setPaddingTop",argc, 1);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_Layout_setPaddingTop'.",&tolua_err);
+#endif
+    
+    return 0;
+}
+
+static int lua_Layout_setPaddingBottom(lua_State* tolua_S)
+{
+    int argc = 0;
+    creator::CreatorLayout* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+    
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"creator.CreatorLayout",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    cobj = (creator::CreatorLayout*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_Layout_setPaddingBottom'", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1)
+    {
+        double arg0;
+        ok &= luaval_to_number(tolua_S, 2, &arg0, "creator.CreatorLayout:setPaddingBottom");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_Layout_setPaddingBottom'", nullptr);
+            return 0;
+        }
+        cobj->setPaddingBottom(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorLayout:setPaddingBottom",argc, 1);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_Layout_setPaddingBottom'.",&tolua_err);
+#endif
+    
+    return 0;
+}
+
+static int lua_Layout_setPaddingLeft(lua_State* tolua_S)
+{
+    int argc = 0;
+    creator::CreatorLayout* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+    
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"creator.CreatorLayout",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    cobj = (creator::CreatorLayout*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_Layout_setPaddingLeft'", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1)
+    {
+        double arg0;
+        ok &= luaval_to_number(tolua_S, 2, &arg0, "creator.CreatorLayout:setPaddingLeft");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_Layout_setPaddingLeft'", nullptr);
+            return 0;
+        }
+        cobj->setPaddingLeft(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorLayout:setPaddingLeft",argc, 1);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_Layout_setPaddingLeft'.",&tolua_err);
+#endif
+    
+    return 0;
+}
+
+static int lua_Layout_setPaddingRight(lua_State* tolua_S)
+{
+    int argc = 0;
+    creator::CreatorLayout* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+    
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"creator.CreatorLayout",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    cobj = (creator::CreatorLayout*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_Layout_setPaddingRight'", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1)
+    {
+        double arg0;
+        ok &= luaval_to_number(tolua_S, 2, &arg0, "creator.CreatorLayout:setPaddingRight");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_Layout_setPaddingRight'", nullptr);
+            return 0;
+        }
+        cobj->setPaddingRight(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorLayout:setPaddingRight",argc, 1);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_Layout_setPaddingRight'.",&tolua_err);
+#endif
+    
+    return 0;
+}
 
 static int lua_register_creator_reader_layout(lua_State* tolua_S)
 {
@@ -729,16 +992,19 @@ static int lua_register_creator_reader_layout(lua_State* tolua_S)
 
 	tolua_beginmodule(tolua_S, "CreatorLayout");
 	tolua_function(tolua_S, "create", lua_Layout_create);
+    tolua_function(tolua_S, "setSpacingX", lua_Layout_setSpacingX);
+    tolua_function(tolua_S, "setSpacingY", lua_Layout_setSpacingY);
+    tolua_function(tolua_S, "setPaddingTop", lua_Layout_setPaddingTop);
+    tolua_function(tolua_S, "setPaddingBottom", lua_Layout_setPaddingBottom);
+    tolua_function(tolua_S, "setPaddingLeft", lua_Layout_setPaddingLeft);
+    tolua_function(tolua_S, "setPaddingRight", lua_Layout_setPaddingRight);
+    
 	tolua_endmodule(tolua_S);
 	std::string typeName = typeid(creator::CreatorLayout).name();
 	g_luaType[typeName] = "creator.CreatorLayout";
 	g_typeCast["CreatorLayout"] = "creator.CreatorLayout";
 	return 1;
 }
-
-
-
-
 
 static int lua_richText_create(lua_State* tolua_S)
 {
@@ -936,7 +1202,7 @@ static int lua_richText_setElementText(lua_State* L)
 
 
 		self->setElementText(index, sText);
-		
+		lua_settop(L, 1);
 		return 1;
 		
 
@@ -977,7 +1243,7 @@ static int lua_richText_setXMLData(lua_State* L)
 
 
 		self->setXMLData( sText);
-
+		lua_settop(L, 1);
 		return 1;
 
 	}
@@ -990,6 +1256,39 @@ static int lua_richText_setXMLData(lua_State* L)
 
 
 
+static int lua_richText_getElementCount(lua_State* L)
+{
+	tolua_Error tolua_err;
+	if (!tolua_isusertype(L, 1, "creator.CreatorRichText", 0, &tolua_err))
+	{
+		tolua_error(L, "'getElement' is not executed with CreatorRichText\n", NULL);
+		return 0;
+	}
+
+	auto self = static_cast<creator::CreatorRichText*>(tolua_tousertype(L, 1, 0));
+	auto count = self->getElementCount();
+
+	lua_pushinteger(L, count);
+	return 1;
+}
+
+
+static int lua_richText_flipElements(lua_State* L)
+{
+	tolua_Error tolua_err;
+	if (!tolua_isusertype(L, 1, "creator.CreatorRichText", 0, &tolua_err))
+	{
+		tolua_error(L, "'getElement' is not executed with CreatorRichText\n", NULL);
+		return 0;
+	}
+
+	auto self = static_cast<creator::CreatorRichText*>(tolua_tousertype(L, 1, 0));
+
+	self->flipElements();
+
+	lua_settop(L, 1);
+	return 1;
+}
 
 
 static int lua_register_creator_reader_richText(lua_State* tolua_S)
@@ -1001,13 +1300,15 @@ static int lua_register_creator_reader_richText(lua_State* tolua_S)
 	tolua_function(tolua_S, "create", lua_richText_create);
 	tolua_function(tolua_S, "removeAllElements", lua_richText_removeAllElements);
 	tolua_function(tolua_S, "setElementsAnchorPoint", lua_richText_setElementsAnchorPoint);
+
 	
 	tolua_function(tolua_S, "getElement", lua_richText_getElement);
 	tolua_function(tolua_S, "setElementText", lua_richText_setElementText);
-
 	tolua_function(tolua_S, "setXMLData", lua_richText_setXMLData);
-
-
+	tolua_function(tolua_S, "getElementCount", lua_richText_getElementCount);
+	tolua_function(tolua_S, "flipElements", lua_richText_flipElements);
+	
+	
 	tolua_endmodule(tolua_S);
 	std::string typeName = typeid(creator::CreatorRichText).name();
 	g_luaType[typeName] = "creator.CreatorRichText";
@@ -1042,8 +1343,44 @@ static int lua_richText_forceDoAlign(lua_State* L)
 	return 0;
 }
 
+static int lua_WidgetManager_forceDoAlignAssignNode(lua_State* L)
+{
+	if (nullptr == L)
+		return 0;
 
+	tolua_Error tolua_err;
+	if (!tolua_isusertype(L, 1, "creator.WidgetManager", 0, &tolua_err))
+	{
+		tolua_error(L, "'forceDoAlignAssignNode' is not executed with WidgetManager\n", NULL);
+		return 0;
+	}
 
+	auto self = static_cast<creator::WidgetManager*>(tolua_tousertype(L, 1, 0));
+
+	int argc = lua_gettop(L) - 1;
+	if (1 == argc)
+	{
+
+		cocos2d::Node* arg0;
+		bool ok = true;
+		ok &= luaval_to_object<cocos2d::Node>(L, 2, "cc.Node", &arg0, "creator.WidgetManager:forceDoAlignAssignNode");
+
+		if (!ok || nullptr == arg0)
+		{
+			tolua_error(L, "invalid arguments in function 'lua_WidgetManager_forceDoAlignAssignNode'", nullptr);
+			return 0;
+		}
+
+		self->forceDoAlignAssignNode(arg0);
+
+		return 1;
+
+	}
+	else
+		luaL_error(L, "'forceDoAlignAssignNode' function of WidgetManager has wrong number of arguments: %d, was expecting %d\n", argc, 1);
+
+	return 0;
+}
 
 static int lua_register_creator_reader_widgetManager(lua_State* tolua_S)
 {
@@ -1052,6 +1389,8 @@ static int lua_register_creator_reader_widgetManager(lua_State* tolua_S)
 
 	tolua_beginmodule(tolua_S, "WidgetManager");
 	tolua_function(tolua_S, "forceDoAlign", lua_richText_forceDoAlign);
+	tolua_function(tolua_S, "forceDoAlignAssignNode", lua_WidgetManager_forceDoAlignAssignNode);
+	
 
 
 	tolua_endmodule(tolua_S);
@@ -1113,6 +1452,23 @@ int lua_creator_reader_getWidgetManager(lua_State* tolua_S)
 }
 
 
+int lua_creator_reader_resetSpriteFrames(lua_State* tolua_S)
+{
+	int argc = 0;
+	creator::CreatorReader* cobj = nullptr;
+	bool ok = true;
+
+	if (argc == 0)
+	{
+		creator::CreatorReader::resetSpriteFrames();
+		return 0;
+	}
+	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "creator.CreatorReader:resetSpriteFrames", argc, 0);
+	return 0;
+}
+
+
+
 static void extendReader(lua_State* L)
 {
 	lua_pushstring(L, "creator.CreatorReader");
@@ -1120,6 +1476,8 @@ static void extendReader(lua_State* L)
 	if (lua_istable(L, -1))
 	{
 		tolua_function(L, "getWidgetManager", lua_creator_reader_getWidgetManager);
+		tolua_function(L, "resetSpriteFrames", lua_creator_reader_resetSpriteFrames);
+		
 	}
 	lua_pop(L, 1);
 }

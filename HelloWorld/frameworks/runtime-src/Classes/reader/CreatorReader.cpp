@@ -162,22 +162,22 @@ CreatorReader::CreatorReader()
 , _positionDiffDesignResolution(0, 0)
 {
     _animationManager = new AnimationManager();
-    _collisionManager = new ColliderManager();
+    //_collisionManager = new ColliderManager();
     _widgetManager = new WidgetManager();
 
     _animationManager->autorelease();
-    _collisionManager->autorelease();
+    //_collisionManager->autorelease();
     _widgetManager->autorelease();
 
     CC_SAFE_RETAIN(_animationManager);
-    CC_SAFE_RETAIN(_collisionManager);
+   // CC_SAFE_RETAIN(_collisionManager);
     CC_SAFE_RETAIN(_widgetManager);
 	
 }
 
 CreatorReader::~CreatorReader()
 {
-    CC_SAFE_RELEASE_NULL(_collisionManager);
+   // CC_SAFE_RELEASE_NULL(_collisionManager);
     CC_SAFE_RELEASE_NULL(_animationManager);
     CC_SAFE_RELEASE_NULL(_widgetManager);
 }
@@ -261,7 +261,9 @@ void CreatorReader::setupSpriteFrames()
     auto frameCache = cocos2d::SpriteFrameCache::getInstance();
 
     if (spriteFrames) {
-        for (const auto& spriteFrame: *spriteFrames) {
+       // for (const auto& spriteFrame: *spriteFrames) {
+		for(auto spriteFrame = spriteFrames->begin(); spriteFrame != spriteFrames->end(); ++spriteFrame)
+		{
 			const auto& filename = spriteFrame->texturePath()->str();
 			const auto& name = spriteFrame->name()->str();
 
@@ -284,26 +286,27 @@ void CreatorReader::setupSpriteFrames()
 				const auto& centerRect = spriteFrame->centerRect();
 				if (sf && centerRect) {
 					cocos2d::Rect sTempRect(centerRect->x(), centerRect->y(), centerRect->w(), centerRect->h());
-					if (centerRect->x() == centerRect->w()){
+					/*if (centerRect->x() == centerRect->w()){
 						sTempRect.size.width = originalSize->w();
 					}
 					if (centerRect->y() == centerRect->h()){
 						sTempRect.size.height = originalSize->h();
 						sf->setRect(sTempRect);
-					}
+					}*/
 					sf->setCenterRectInPixels(sTempRect);
 				}
 
 				if (sf) {
 					frameCache->addSpriteFrame(sf, name);
-					CCLOG("Adding sprite frame: %s", name.c_str());
+					//CCLOG("Adding sprite frame: %s", name.c_str());
+					sf->adjustRect(true);
 				}
-
-				s_checkSpriteFrameFixed[name] = true;
+				
+				//s_checkSpriteFrameFixed[name] = true;
 			}
 			else
 			{
-				if (!s_checkSpriteFrameFixed[name])
+				if (!pSpriteFrame->hasAdjustRect())
 				{
 					const auto& centerRect = spriteFrame->centerRect();
 					if (centerRect) {
@@ -328,7 +331,8 @@ void CreatorReader::setupSpriteFrames()
 						pSpriteFrame->setCenterRectInPixels(cocos2d::Rect(centerRect->x(), centerRect->y(), centerRect->w(), centerRect->h()));
 
 					}
-					s_checkSpriteFrameFixed[name] = true;
+					//s_checkSpriteFrameFixed[name] = true;
+					pSpriteFrame->adjustRect(true);
 				}
 			}
         }
@@ -337,6 +341,7 @@ void CreatorReader::setupSpriteFrames()
 
 void CreatorReader::setupCollisionMatrix()
 {
+#if 0
     const void* buffer = _data.getBytes();
     const auto& sceneGraph = GetSceneGraph(buffer);
     const auto& collisionMatrixBuffer = sceneGraph->collisionMatrix();
@@ -351,7 +356,8 @@ void CreatorReader::setupCollisionMatrix()
         collisionMatrix.push_back(line);
     }
     
-    _collisionManager->setCollistionMatrix(collisionMatrix);
+   _collisionManager->setCollistionMatrix(collisionMatrix);
+#endif
 }
 
 cocos2d::Scene* CreatorReader::getSceneGraph() const
@@ -408,9 +414,9 @@ cocos2d::Node* CreatorReader::getNodeGraph() const
 
 	_animationManager->playOnLoad();
 
-	node->addChild(_collisionManager);
+	//node->addChild(_collisionManager);
 	node->addChild(_animationManager);
-	_collisionManager->start();
+	//_collisionManager->start();
 
 	_widgetManager->setupWidgets();
 	//node->addChild(_widgetManager);
@@ -425,7 +431,8 @@ AnimationManager* CreatorReader::getAnimationManager() const
 
 ColliderManager* CreatorReader::getColliderManager() const
 {
-    return _collisionManager;
+    //return _collisionManager;
+	return nullptr;
 }
 
 WidgetManager* CreatorReader::getWidgetManager() const
@@ -530,74 +537,83 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree, bool isS
     }
 
 
-    // recursively add its children
-    const auto& children = tree->children();
-    for(const auto& childBuffer: *children)
-    {
-        cocos2d::Node* child = createTree(childBuffer);
-        if (child && node)
-        {
-            // should adjust child's position except Button's label
-         
-              node->addChild(child);
-			  if (static_cast<int>(bufferType) != buffers::AnyNode_Scene)
-			  {
-				  adjustPosition(child);
-			  }
-              
-            
-        }
-    }
+	// recursively add its children
+	if (node)
+	{
+		const auto& children = tree->children();
+		for (const auto& childBuffer : *children)
+		{
+			cocos2d::Node* child = createTree(childBuffer);
+			if (child)
+			{
+				// should adjust child's position except Button's label
 
-	//AnyNode_ToggleGroup
+				node->addChild(child);
+				if (static_cast<int>(bufferType) != buffers::AnyNode_Scene)
+				{
+					adjustPosition(child);
+				}
+			}
+		}
+	}
+
+	//AnyNode_PageView
+	/* 
+	*/
 	if (static_cast<int>(bufferType) == buffers::AnyNode_PageView)
 	{
 		auto pGroup = dynamic_cast<CreatorPageView*>(node);
-
 		auto pPageViewChildren = pGroup->getChildren();
-		auto pNode = pGroup->getChildByName("view");
-			
-		if (pNode)
+
+		auto pNodeView = pGroup->getChildByName("view");
+		if (pNodeView)
 		{
+			auto pNodeContent = pNodeView->getChildByName("content");
+			_widgetManager->removeWidgetByNode(pNodeView);
+			_widgetManager->removeWidgetByNode(pNodeContent);
+			//creator 
+			
+			auto pContentChildren = pNodeContent->getChildren();
+			auto contentCount = pNodeContent->getChildrenCount();
 
-				auto children = pNode->getChildren();
-				auto count = pNode->getChildrenCount();
+			for (int i = 0; i < contentCount; ++i)
+			{
+				//page 
+				auto pTargetNode = pPageViewChildren.at(i);
 
-				for (int i = 0; i < count; ++i)
+				//creator
+				auto pSourceNode = pContentChildren.at(i);
+				_widgetManager->removeWidgetByNode(pSourceNode);
+				std::list<cocos2d::Node*> sList;
+
+				auto pNodeTempChildren = pSourceNode->getChildren();
+				for (int j = 0; j < pSourceNode->getChildrenCount(); ++j)
 				{
-					auto pTargetNode = pPageViewChildren.at(i);
-					auto pSourceNode = children.at(i);
-					std::list<cocos2d::Node*> sList;
-
-					auto pNodeTempChildren = pSourceNode->getChildren();
-					for (int j = 0; j < pSourceNode->getChildrenCount(); ++j)
-					{
-						sList.push_back(pNodeTempChildren.at(j));
-
-					}
-
-					for (auto it = sList.begin(); it != sList.end(); ++it)
-					{
-						(*it)->retain();
-						(*it)->removeFromParentAndCleanup(false);
-						pTargetNode->addChild((*it));
-						(*it)->release();
-					}
+					sList.push_back(pNodeTempChildren.at(j));
 				}
 
-				pNode->removeFromParent();
+				for (auto it = sList.begin(); it != sList.end(); ++it)
+				{
+					(*it)->retain();
+					(*it)->removeFromParentAndCleanup(false);
+					pTargetNode->addChild((*it));
+					(*it)->release();
+				}
 			}
-
-		
+			
+			pNodeView->removeFromParent();
+			
+		}
 	}
-
+	
+	//AnyNode_ToggleGroup
 	if (static_cast<int>(bufferType) == buffers::AnyNode_ToggleGroup)
 	{
 		auto pGroup = dynamic_cast<CreatorRadioButtonGroup*>(node);
 		auto children = pGroup->getChildren();
 		auto isAllowedNoSelection = pGroup->isAllowedNoSelection();
 		pGroup->setAllowedNoSelection(false);
-		for (auto it = children.begin(); it != children.end(); it++)
+		for (auto it= children.begin();it != children.end();++it)
 		{
 			auto pToggle = dynamic_cast<CreatorRadioButton*>(*it);
 			if (pToggle)
@@ -617,6 +633,14 @@ cocos2d::Node* CreatorReader::createTree(const buffers::NodeTree* tree, bool isS
 	if (static_cast<int>(bufferType) == buffers::AnyNode_EditBox)
 	{
 		auto pEditBox = dynamic_cast<ui::EditBox*>(node);
+
+		auto pSpriteBg = pEditBox->getChildByName("BACKGROUND_SPRITE");
+		auto pLabelText = pEditBox->getChildByName("TEXT_LABEL");
+		auto pLabelPlaceHolder = pEditBox->getChildByName("PLACEHOLDER_LABEL");
+	
+		_widgetManager->removeWidgetByNode(pSpriteBg);
+		_widgetManager->removeWidgetByNode(pLabelText);
+		_widgetManager->removeWidgetByNode(pLabelPlaceHolder);
 		pEditBox->removeChildByName("BACKGROUND_SPRITE");
 		pEditBox->removeChildByName("TEXT_LABEL");
 		pEditBox->removeChildByName("PLACEHOLDER_LABEL");
@@ -687,7 +711,7 @@ void CreatorReader::parseNode(cocos2d::Node* node, const buffers::Node* nodeBuff
     // animation?
     parseNodeAnimation(node, nodeBuffer);
     
-    parseColliders(node, nodeBuffer);
+  //  parseColliders(node, nodeBuffer);
 
     parseWidget(node, nodeBuffer);
 }
@@ -806,6 +830,7 @@ void CreatorReader::parseNodeAnimation(cocos2d::Node* node, const buffers::Node*
 
 void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nodeBuffer) const
 {
+#if 0
     const auto& collidersBuffer = nodeBuffer->colliders();
     const auto& groupIndex = nodeBuffer->groupIndex();
     
@@ -839,6 +864,7 @@ void CreatorReader::parseColliders(cocos2d::Node* node, const buffers::Node* nod
     
     if (collider)
         _collisionManager->addCollider(collider);
+#endif
 }
 
 void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBuffer) const
@@ -903,7 +929,7 @@ void CreatorReader::parseWidget(cocos2d::Node *node, const buffers::Node *nodeBu
 			widgetInfo->setAlignComb(alignComb);
 			widgetInfo->setAdaptNode(pNode);
 			widgetInfo->setIsAlignOnce(info->isAlignOnce());
-			_widgetManager->_needAdaptWidgets.pushBack(widgetInfo);
+			_widgetManager-> _needAdaptWidgets.pushBack(widgetInfo);
 		}
 		
 	}
@@ -913,10 +939,23 @@ void CreatorReader::parseTrimedSprite(cocos2d::Sprite* sprite) const
 {
 	if (sprite)
 	{
-		auto pSpriteFrame = sprite->getSpriteFrame();
-		pSpriteFrame->setOffset(cocos2d::Vec2(0, 0));
-		sprite->setSpriteFrame(pSpriteFrame);
-		sprite->setTextureRect(pSpriteFrame->getRect());
+		auto pSpriteFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(sprite->getResourceName());;//sprite->getSpriteFrame();
+		//pSpriteFrame->setOffset(cocos2d::Vec2(0, 0));
+		if (pSpriteFrame)
+		{
+			sprite->setSpriteFrame(pSpriteFrame);
+			sprite->setTextureRect(pSpriteFrame->getRect());
+		}
+		else
+		{
+			if (sprite->isSpriteFrame())
+			{
+				pSpriteFrame = sprite->getSpriteFrame();
+				pSpriteFrame->setOffset(cocos2d::Vec2(0, 0));
+				sprite->setSpriteFrame(pSpriteFrame);
+				sprite->setTextureRect(pSpriteFrame->getRect());
+			}
+		}
 	}
 
 }
@@ -996,6 +1035,8 @@ void CreatorReader::parseSprite(cocos2d::ui::Scale9Sprite* sprite, const buffers
 		 blendFunc.src = srcBlend;
 		 blendFunc.dst = dstBlend;
 		 sprite->setBlendFunc(blendFunc);
+		// const auto& opacityModifyRGB = nodeBuffer->opacityModifyRGB();
+		//sprite->setOpacityModifyRGB(true);
 	 }
      
 
@@ -1353,11 +1394,19 @@ void CreatorReader::parseProgressBar(cocos2d::ui::LoadingBar* progressBar, const
     // background sprite
     if (progressBarBuffer->backgroundSpriteFrameName()) {
         auto sprite = cocos2d::Sprite::create(progressBarBuffer->backgroundSpriteFrameName()->c_str());
-        sprite->setStretchEnabled(true);
-        sprite->setContentSize(progressBar->getContentSize());
-        sprite->setAnchorPoint(cocos2d::Vec2(0,0));
-        // background sprite should show first
-        progressBar->addChild(sprite, -1);
+		if (sprite)
+		{
+			sprite->setStretchEnabled(true);
+			sprite->setContentSize(progressBar->getContentSize());
+			sprite->setAnchorPoint(cocos2d::Vec2(0, 0));
+			// background sprite should show first
+			progressBar->addChild(sprite, -1);
+		}
+		else
+		{
+			CCLOGERROR("parseProgressBar %s create fail", progressBarBuffer->backgroundSpriteFrameName()->c_str());
+		}
+       
     }
     
     if (progressBarBuffer->reverse())
@@ -2015,7 +2064,7 @@ void CreatorReader::parseMotionStreak(cocos2d::MotionStreak* motionStreak, const
         // animation?
         parseNodeAnimation(node, nodeBuffer);
         
-        parseColliders(node, nodeBuffer);
+     //   parseColliders(node, nodeBuffer);
     }
     
     const auto& fastMode = motionStreakBuffer->fastMode();

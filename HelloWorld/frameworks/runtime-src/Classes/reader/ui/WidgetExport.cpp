@@ -85,6 +85,7 @@ void WidgetAdapter::setLayoutTarget(cocos2d::Node* layoutTarget)
 	{
 		_layoutTarget->retain();
 	}
+	
 }
 
 void WidgetAdapter::setMargin(const Margin &sMargin)
@@ -438,12 +439,16 @@ void WidgetAdapter::setupLayout()
 }
 
 
+cocos2d::Node* WidgetAdapter::getAdaptNode() {
+	return _needAdaptNode;
+}
 
 cocos2d::Rect WidgetManager::m_sSafeUIRect = cocos2d::Rect();
 
 WidgetManager::WidgetManager()
 : _forceAlignDirty(false)
 {
+
 }
 
 WidgetManager::~WidgetManager()
@@ -457,6 +462,31 @@ void WidgetManager::cleanup()
 	_needAdaptWidgets.clear();
 }
 
+void WidgetManager::addWidget(WidgetAdapter* pWidget)
+{
+	_needAdaptWidgets.pushBack(pWidget);
+}
+
+void  WidgetManager::removeWidgetByNode(cocos2d::Node* pNode)
+{
+	if (!pNode)
+	{
+		return;
+	}
+
+	int size = _needAdaptWidgets.size();
+	for (int i = 0; i < size; ++i)
+	{
+		auto pWidget = _needAdaptWidgets.at(i);
+		if (pWidget->getAdaptNode() == pNode)
+		{
+			pWidget->setAdaptNode(nullptr);
+			_needAdaptWidgets.erase(i);
+			break;
+		}
+		
+	}
+}
 
 
 void WidgetManager::update(float dt)
@@ -473,6 +503,21 @@ void WidgetManager::forceDoAlign()
 void WidgetManager::setSafeUIRect(cocos2d::Rect &sRect)
 {
 	m_sSafeUIRect = sRect;
+}
+
+
+void WidgetManager::forceDoAlignAssignNode(cocos2d::Node* assignNode)
+{
+	if (assignNode)
+	{
+		for (auto& adapter : _needAdaptWidgets) {
+			if (adapter->getAdaptNode() == assignNode)
+			{
+				adapter->syncLayoutProperty();
+				break;
+			}
+		}
+	}
 }
 
 void WidgetManager::doAlign()

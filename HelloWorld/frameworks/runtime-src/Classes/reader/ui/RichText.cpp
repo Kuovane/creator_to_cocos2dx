@@ -80,7 +80,28 @@ void CreatorRichText::removeAllElements()
 	_richElements.clear();
 	_formatTextDirty = true;
 
-	formatText();
+//	formatText();
+}
+
+int CreatorRichText::getElementCount()
+{
+	return _richElements.size();
+}
+
+void CreatorRichText::flipElements()
+{
+	{
+		int count = getElementCount();
+		Vector<RichElement*> sTemp;
+		for (int i = 0; i < count; i++)
+		{
+			sTemp.pushBack(_richElements.at(count - i - 1));
+		}
+		_richElements.clear();
+		_richElements = sTemp;
+	}
+
+	_formatTextDirty = true;
 }
 
 void CreatorRichText::setElementsAnchorPoint(Vec2 sVec2)
@@ -90,102 +111,114 @@ void CreatorRichText::setElementsAnchorPoint(Vec2 sVec2)
 
 void CreatorRichText::formatRenderers()
 {
-	createArrangeNode();
+    if (_formatTextDirty) {
+        createArrangeNode();
 
-	float verticalSpace = _defaults[KEY_VERTICAL_SPACE].asFloat();
-	float fontSize = _defaults[KEY_FONT_SIZE].asFloat();
+        float verticalSpace = _defaults[KEY_VERTICAL_SPACE].asFloat();
+        float fontSize = _defaults[KEY_FONT_SIZE].asFloat();
 
-	if (_ignoreSize)
-	{
-		float newContentSizeWidth = 0.0f;
-		float nextPosY = 0.0f;
-		std::vector<std::pair<Vector<Node*>*, float> > rowWidthPairs;
-		rowWidthPairs.reserve(_elementRenders.size());
-		for (auto& element : _elementRenders)
-		{
-			float nextPosX = 0.0f;
-			float maxY = 0.0f;
-			for (auto& iter : element)
-			{
-				iter->setAnchorPoint(m_sDefaultAnchorPoint);
-				iter->setPosition(nextPosX, nextPosY);
-				_arrangeNode->addProtectedChild(iter, 1);
-				Size iSize = iter->getContentSize();
-				newContentSizeWidth += iSize.width;
-				nextPosX += iSize.width;
-				maxY = MAX(maxY, iSize.height);
-			}
-			nextPosY -= (maxY + verticalSpace);
-			rowWidthPairs.emplace_back(&element, nextPosX);
-		}
-		if (nextPosY < 0.0f)
-		{
-			nextPosY += verticalSpace;
-		}
-		this->setContentSize(Size(newContentSizeWidth, -nextPosY));
-		_arrangeNode->setPositionY(-nextPosY);
+        if (_ignoreSize)
+        {
+            float newContentSizeWidth = 0.0f;
+            float nextPosY = 0.0f;
+            float firstRowHeight = 0.0f;
+            std::vector<std::pair<Vector<Node*>*, float> > rowWidthPairs;
+            rowWidthPairs.reserve(_elementRenders.size());
+            //for (auto& element : _elementRenders)
+            for (size_t i = 0, size = _elementRenders.size(); i < size; i++)
+            {
+                auto& element = _elementRenders[i];
+                float nextPosX = 0.0f;
+                float maxY = 0.0f;
+                float lineWidth = 0.0f;
+                for (auto& iter : element)
+                {
+                    iter->setAnchorPoint(m_sDefaultAnchorPoint);
+                    iter->setPosition(nextPosX, nextPosY);
+                    _arrangeNode->addProtectedChild(iter, 1);
+                    Size iSize = iter->getContentSize();
+                    lineWidth += iSize.width;
+                    nextPosX += iSize.width;
+                    maxY = MAX(maxY, iSize.height);
+                }
+                if (i == 0)
+                {
+                    firstRowHeight = maxY;
+                }
+                newContentSizeWidth = MAX(newContentSizeWidth, lineWidth);
+                nextPosY -= (maxY + verticalSpace);
+                rowWidthPairs.emplace_back(&element, nextPosX);
+            }
+            if (nextPosY < 0.0f)
+            {
+                nextPosY += verticalSpace;
+            }
+            this->setContentSize(Size(newContentSizeWidth, -nextPosY));
+            _arrangeNode->setPositionY(-nextPosY - firstRowHeight*(1- m_sDefaultAnchorPoint.y));
 
-		for (auto& row : rowWidthPairs)
-			doHorizontalAlignment(*row.first, row.second);
-	}
-	else
-	{
-		// calculate real height
-		float newContentSizeHeight = 0.0f;
-		std::vector<float> maxHeights(_elementRenders.size());
+            for (auto& row : rowWidthPairs)
+                doHorizontalAlignment(*row.first, row.second);
+        }
+        else
+        {
+            // calculate real height
+            float newContentSizeHeight = 0.0f;
+            std::vector<float> maxHeights(_elementRenders.size());
 
-		for (size_t i = 0, size = _elementRenders.size(); i<size; i++)
-		{
-			Vector<Node*>& row = _elementRenders[i];
-			float maxHeight = 0.0f;
-			for (auto& iter : row)
-			{
-				maxHeight = std::max(iter->getContentSize().height, maxHeight);
-			}
+            for (size_t i = 0, size = _elementRenders.size(); i<size; i++)
+            {
+                Vector<Node*>& row = _elementRenders[i];
+                float maxHeight = 0.0f;
+                for (auto& iter : row)
+                {
+                    maxHeight = std::max(iter->getContentSize().height, maxHeight);
+                }
 
-			// gap for empty line, if _lineHeights[i] == 0, use current RichText's fontSize
-			if (row.empty())
-			{
-				maxHeight = (_lineHeights[i] != 0.0f ? _lineHeights[i] : fontSize);
-			}
-			maxHeights[i] = maxHeight;
+                // gap for empty line, if _lineHeights[i] == 0, use current RichText's fontSize
+                if (row.empty())
+                {
+                    maxHeight = (_lineHeights[i] != 0.0f ? _lineHeights[i] : fontSize);
+                }
+                maxHeights[i] = maxHeight;
 
-			// vertical space except for first line
-			newContentSizeHeight += (i != 0 ? maxHeight + verticalSpace : maxHeight);
-		}
-		_customSize.height = newContentSizeHeight;
+                // vertical space except for first line
+                newContentSizeHeight += (i != 0 ? maxHeight + verticalSpace : maxHeight);
+            }
+            _customSize.height = newContentSizeHeight;
 
-		// align renders
-		float nextPosY = _customSize.height;
-		for (size_t i = 0, size = _elementRenders.size(); i<size; i++)
-		{
-			Vector<Node*>& row = _elementRenders[i];
-			float nextPosX = 0.0f;
-			nextPosY -= (i != 0 ? maxHeights[i] + verticalSpace : maxHeights[i]);
-			for (auto& iter : row)
-			{
-				iter->setAnchorPoint(Vec2::ZERO);
-				iter->setPosition(nextPosX, nextPosY);
-				this->addProtectedChild(iter, 1);
-				nextPosX += iter->getContentSize().width;
-			}
+            // align renders
+            float nextPosY = _customSize.height;
+            for (size_t i = 0, size = _elementRenders.size(); i<size; i++)
+            {
+                Vector<Node*>& row = _elementRenders[i];
+                float nextPosX = 0.0f;
+                nextPosY -= (i != 0 ? maxHeights[i] + verticalSpace : maxHeights[i]);
+                for (auto& iter : row)
+                {
+                    iter->setAnchorPoint(m_sDefaultAnchorPoint);
+                    iter->setPosition(nextPosX, nextPosY + maxHeights[i]* m_sDefaultAnchorPoint.y);
+                    this->addProtectedChild(iter, 1);
+                    nextPosX += iter->getContentSize().width;
+                }
 
-			doHorizontalAlignment(row, nextPosX);
-		}
-	}
+                doHorizontalAlignment(row, nextPosX);
+            }
+        }
 
-	_elementRenders.clear();
-	_lineHeights.clear();
+        _elementRenders.clear();
+        _lineHeights.clear();
 
-	if (_ignoreSize)
-	{
-		Size s = getVirtualRendererSize();
-		this->setContentSize(s);
-	}
-	else
-	{
-		this->setContentSize(_customSize);
-	}
+        if (_ignoreSize)
+        {
+            Size s = getVirtualRendererSize();
+            this->setContentSize(s);
+        }
+        else
+        {
+            this->setContentSize(_customSize);
+        }
+    }
+
 	updateContentSizeWithTextureSize(_contentSize);
 }
 
